@@ -92,30 +92,7 @@ The current version uses CatBoost Regression to predict a driver's finishing pos
 * Streamlit
 * Requests
 * Jolpi API
-
----
-
-## 📁 Project Structure
-
-```text
-F1-Race-Outcome-Predictor/
-│
-├── assets/
-│
-├── fetch_data_v3.py
-├── train_v3.py
-├── predict_race_v3.py
-│
-├── f1_training_data_v3.csv
-├── f1_model_v3.pkl
-│
-├── app_v1.py
-│
-├── requirements.txt
-├── README.md
-└── .gitignore
-```
-
+  
 ---
 
 ## 🔮 Example Prediction Workflow
@@ -172,22 +149,10 @@ Install dependencies:
 pip install -r requirements.txt
 ```
 
-Train the model:
-
-```bash
-python train_v3.py
-```
-
-Generate race predictions:
-
-```bash
-python predict_race_v3.py
-```
-
 Run the dashboard:
 
 ```bash
-streamlit run app_v1.py
+python -m streamlit run app_v1.py
 ```
 
 ---
