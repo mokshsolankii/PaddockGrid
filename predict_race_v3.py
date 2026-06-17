@@ -19,6 +19,8 @@ import requests
 import os
 from datetime import date as _date
 import time
+# --- Import the centralized feature engine ---
+from features_v3 import compute_v3_features
 
 os.makedirs("f1_cache", exist_ok=True)
 fastf1.Cache.enable_cache("f1_cache")
@@ -218,9 +220,6 @@ def predict_race(year, race_name, round_num=None):
     air_temp, rainfall, track_temp = get_weather(circuit["lat"], circuit["lon"], race_date)
 
     # ── Build prediction rows ──────────────────────────────────────────────────
-    drivers_to_predict = DRIVERS_2026 if year == 2026 else {}
-
-    # If we have quali data, use those drivers; else use full 2026 grid
     if has_quali and q_best:
         predict_codes = list(q_best.keys())
     elif year == 2026:
@@ -243,6 +242,7 @@ def predict_race(year, race_name, round_num=None):
 
         q_time   = q_best.get(code, median_q)
         pole_gap = round(q_time - pole_time, 3) if pole_time else 0.0
+        print_code = "ANT" if code == "KIM" else code # Handle FastF1 abbreviation nuances if any
         d_pts    = driver_pts.get(code, 0.0)
         c_pts    = constructor_pts.get(team, 0.0)
         grid     = q_grid.get(code, list(predict_codes).index(code) + 1)
@@ -269,13 +269,18 @@ def predict_race(year, race_name, round_num=None):
             "driver_form_last3":  drv_form,
             "team_form_last3":    team_form,
             "driver_track_hist":  track_hist,
-            # for display
+            "finish_position":    grid, # Temporary placeholder to feed features utility safely
             "_name":              name,
         }
         rows.append(row)
 
-    # ── Predict ────────────────────────────────────────────────────────────────
+    # ── Process the New Priority Features Live ────────────────────────────────
     df_pred = pd.DataFrame(rows)
+    
+    print("  → Dynamic calculations for ranks and rolling performance...")
+    df_pred = compute_v3_features(df_pred)
+
+    # ── Predict ────────────────────────────────────────────────────────────────
     X_pred  = df_pred[ALL_FEATURES]
     scores  = model.predict(X_pred)
     df_pred["predicted_score"] = scores

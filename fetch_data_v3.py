@@ -19,6 +19,38 @@ from collections import defaultdict
 os.makedirs("f1_cache", exist_ok=True)
 fastf1.Cache.enable_cache("f1_cache")
 
+def engineer_priority_v3_features(df):
+    # Sort chronologically to ensure rolling windows behave correctly
+    df = df.sort_values(by=['year', 'round', 'finish_position']).reset_index(drop=True)
+    
+    print("Engineering championship ranks...")
+    # Calculate Driver and Constructor Championship Ranks for each race weekend
+    df['driver_championship_rank'] = df.groupby(['year', 'round'])['driver_points'].rank(ascending=False, method='min')
+    df['constructor_championship_rank'] = df.groupby(['year', 'round'])['constructor_points'].rank(ascending=False, method='min')
+    
+    print("Engineering rolling finishing form (last 5 races)...")
+    # Driver rolling average finish (shifted by 1 to prevent data leakage)
+    df['driver_avg_finish_last5'] = df.groupby('driver')['finish_position'].transform(
+        lambda x: x.shift(1).rolling(window=5, min_periods=1).mean()
+    )
+    
+    # Team rolling average finish (shifted by 1 to prevent data leakage)
+    df['team_avg_finish_last5'] = df.groupby('team')['finish_position'].transform(
+        lambda x: x.shift(1).rolling(window=5, min_periods=1).mean()
+    )
+    
+    # Handle initial races where historical rolling data isn't full yet
+    # Fallback to their grid position if no previous races exist in dataset
+    df['driver_avg_finish_last5'] = df['driver_avg_finish_last5'].fillna(df['grid_position'])
+    df['team_avg_finish_last5'] = df['team_avg_finish_last5'].fillna(df['grid_position'])
+    
+    return df
+
+# Application example:
+# df = pd.read_csv("f1_training_data_v3.csv")
+# df = engineer_priority_v3_features(df)
+# df.to_csv("f1_training_data_v3.csv", index=False)
+
 # ── 2026 verified standings after Round 7 (Barcelona, 15 Jun 2026) ────────────
 DRIVER_POINTS_2026 = {
     "ANT": 156, "HAM": 115, "RUS": 106, "LEC":  75,
