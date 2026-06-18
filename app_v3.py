@@ -403,10 +403,11 @@ with row1_cols[0]:
 
     st.markdown("""
     <style>
+    /* ==================== COLUMN 1 PERFECT COHERENCE ==================== */
     .wdc-wrapper-box {
         position: relative;
         width: 100%;
-        height: 115px;
+        height: 115px; /* Box ki absolute background height sync ki */
         display: flex;
         align-items: flex-end;
     }
@@ -419,16 +420,16 @@ with row1_cols[0]:
         flex-direction: column;
         justify-content: center;
         width: 100%;
-        height: 95px;
+        height: 115px !important; /* Isko humne exact baaki cards ki tarah 115px kar diya */
         box-sizing: border-box;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .wdc-3d-avatar {
         position: absolute;
         left: 12px;
-        bottom: 5px;
+        bottom: 5px; /* Avatar thoda sa bahar pop-out karega premium feel ke liye */
         width: 85px;
-        height: 95px;
+        height: 105px; /* Avatar ki height halki si adjust ki taaki cut na ho */
         object-fit: contain;
         z-index: 10;
         filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
