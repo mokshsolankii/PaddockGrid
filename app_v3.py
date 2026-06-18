@@ -393,56 +393,71 @@ with row1_cols[0]:
     """, unsafe_allow_html=True)
 
 with row1_cols[1]:
+    # Custom Unified CSS specifically targeting Box 2 to capture the selectbox inside
     st.markdown("""
     <style>
-    .gp-container-card {
-        background: #181820;
-        border: 1px solid rgba(255, 255, 255, 0.04);
-        border-radius: 10px;
-        padding: 12px 16px;
-        height: 95px;
-        box-sizing: border-box;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        margin-bottom: 0px !important;
+    .gp-unified-card {
+        background: #181820 !important;
+        border: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-radius: 10px !important;
+        padding: 10px 16px !important;
+        height: 95px !important;            /* Exact match with WDC card height */
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: space-between !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
     }
-    div[data-testid="stColumn"]:nth-of-type(2):hover .gp-container-card {
+    
+    /* Hover state for Box 2 */
+    div[data-testid="stColumn"]:nth-of-type(2):hover .gp-unified-card {
         border-color: #FF1801 !important;
         box-shadow: 0 0 20px rgba(255, 24, 1, 0.3) !important;
         background: #1c1c26 !important;
     }
+    
+    /* Completely hide default Streamlit text labels to avoid dual headers */
     div[data-testid="stColumn"]:nth-of-type(2) label[data-testid="stWidgetLabel"] {
         display: none !important;
         height: 0px !important;
         margin: 0px !important;
         padding: 0px !important;
     }
+    
+    /* Pull selectbox setup slightly up for precise vertical alignment */
     div[data-testid="stColumn"]:nth-of-type(2) div[data-testid="stSelectbox"] {
-        margin-top: 4px !important;
+        margin-top: -2px !important;
+        padding: 0px !important;
     }
+    
+    /* Theme integration for the select dropdown container */
     div[data-testid="stColumn"]:nth-of-type(2) div[role="combobox"] {
         background-color: rgba(255, 255, 255, 0.02) !important;
         border: 1px solid rgba(255, 255, 255, 0.08) !important;
         border-radius: 6px !important;
+        color: #F3F4F6 !important;
     }
     </style>
     """, unsafe_allow_html=True)
 
+    # 1. Open the Unified Premium Box with custom heading text
     st.markdown("""
-    <div class="gp-container-card">
-        <div style="color: #888888; font-size: 0.72em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.2; margin-bottom: 2px;">SELECT GRAND PRIX</div>
+    <div class="gp-unified-card">
+        <div style="color: #888888; font-size: 0.72em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.2; text-align: center;">SELECT GRAND PRIX</div>
     """, unsafe_allow_html=True)
 
+    # 2. Inject Streamlit selectbox component inside the open container
     selected_option = st.selectbox(
-        "Select Grand Prix",
+        "Select Grand Prix", # Hidden by CSS anyway
         options=races_list,
         index=default_index,
         key="dashboard_gp_selector_final"
     )
     
     race_name = selected_option.split(": ")[-1]
+    
+    # 3. Securely close the container box
     st.markdown("</div>", unsafe_allow_html=True)
 
 with row1_cols[2]:
