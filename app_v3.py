@@ -219,9 +219,11 @@ st.markdown(
     /* ==================== INJECTED FIX FOR SELECT GRAND PRIX CARD ==================== */
     .gp-unified-card {
         background: #181820 !important;
-        border: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-left: 1px solid rgba(255, 255, 255, 0.04) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
         border-radius: 10px 10px 0 0 !important;
-        padding: 14px 16px 2px 16px !important;
+        padding: 16px 20px 0px 20px !important; /* Perfect top and side alignment match */
         height: 38px !important;
         box-sizing: border-box !important;
     }
@@ -240,9 +242,9 @@ st.markdown(
         border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
         border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
         border-radius: 0 0 10px 10px !important;
-        padding: 0px 16px 14px 16px !important;
-        margin-top: -1px !important; 
-        height: 57px !important; 
+        padding: 0px 20px 16px 20px !important;
+        margin-top: 0px !important; 
+        height: 57px !important; /* 38px + 57px = 95px Exact Match! */
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
     }
     div[data-testid="stColumn"]:nth-of-type(2) label[data-testid="stWidgetLabel"] {
