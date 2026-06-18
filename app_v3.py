@@ -395,35 +395,38 @@ if trigger_prediction:
             if len(pred_df) > 1:
                 p2_row = pred_df.iloc[1]
                 p2_color = TEAM_COLORS.get(p2_row['team'], '#FFFFFF')
-                # Fetch base64 binary markup block cleanly for P2 team logo
                 p2_logo_html = get_base64_logo_html(p2_row['team'], p2_color)
+                # Centering override for the HTML card layout
+                p2_logo_centered = p2_logo_html.replace("justify-content: flex-start;", "justify-content: center;").replace("text-align: left !important;", "text-align: center !important;")
                 with podium_cols[0]:
                     st.markdown("<div><span class='pos-badge' style='background:#C0C0C0; color:#111;'>🥈 P2</span></div>", unsafe_allow_html=True)
                     st.image(get_driver_image(p2_row['driver']), width=170)
                     st.markdown(f"### {p2_row['_name']}")
-                    st.markdown(p2_logo_html, unsafe_allow_html=True)
+                    st.markdown(p2_logo_centered, unsafe_allow_html=True)
 
             if len(pred_df) > 0:
                 p1_row = pred_df.iloc[0]
                 p1_color = TEAM_COLORS.get(p1_row['team'], '#FFFFFF')
-                # Fetch base64 binary markup block cleanly for Winner team logo
                 p1_logo_html = get_base64_logo_html(p1_row['team'], p1_color)
+                # Centering override for the HTML card layout
+                p1_logo_centered = p1_logo_html.replace("justify-content: flex-start;", "justify-content: center;").replace("text-align: left !important;", "text-align: center !important;")
                 with podium_cols[1]:
                     st.markdown("<div><span class='pos-badge' style='background:#FFD700; color:#111;'>🏆 WINNER</span></div>", unsafe_allow_html=True)
                     st.image(get_driver_image(p1_row['driver']), width=210)
                     st.markdown(f"<h2>{p1_row['_name']}</h2>", unsafe_allow_html=True)
-                    st.markdown(p1_logo_html, unsafe_allow_html=True)
+                    st.markdown(p1_logo_centered, unsafe_allow_html=True)
 
             if len(pred_df) > 2:
                 p3_row = pred_df.iloc[2]
                 p3_color = TEAM_COLORS.get(p3_row['team'], '#FFFFFF')
-                # Fetch base64 binary markup block cleanly for P3 team logo
                 p3_logo_html = get_base64_logo_html(p3_row['team'], p3_color)
+                # Centering override for the HTML card layout
+                p3_logo_centered = p3_logo_html.replace("justify-content: flex-start;", "justify-content: center;").replace("text-align: left !important;", "text-align: center !important;")
                 with podium_cols[2]:
                     st.markdown("<div><span class='pos-badge' style='background:#CD7F32; color:#111;'>🥉 P3</span></div>", unsafe_allow_html=True)
                     st.image(get_driver_image(p3_row['driver']), width=170)
                     st.markdown(f"### {p3_row['_name']}")
-                    st.markdown(p3_logo_html, unsafe_allow_html=True)
+                    st.markdown(p3_logo_centered, unsafe_allow_html=True)
 
             st.markdown("<br><h3 style='margin-top: 25px;'>🏁 Full Predicted Grid Standing</h3>", unsafe_allow_html=True)
             st.markdown("---")
