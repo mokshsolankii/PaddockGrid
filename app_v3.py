@@ -342,7 +342,7 @@ bundle = load_model_bundle()
 if bundle is None: st.stop()
 model, ALL_FEATURES = bundle["model"], bundle["features"]
 
-st.markdown("<h1 style='color: #FF1801; font-weight: bold; margin-top: -10px; margin-bottom: 2px;'>Formula 1 Race Outcome Predictor V3</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='color: #FF1801; font-weight: bold; margin-top: -10px; margin-bottom: 2px;'>PaddockGrid</h1>", unsafe_allow_html=True)
 st.markdown("<p style='font-size: 1.0em; color: #888888; margin-bottom: 25px;'>⚡ Telemetry Analytics • Straight from the pitlane, onto the grid ⚡</p>", unsafe_allow_html=True)
 
 F1_2026_SCHEDULE = [
