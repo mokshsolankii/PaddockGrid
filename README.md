@@ -2,7 +2,7 @@
 
 An elite, production-grade F1 Race Outcome Predictor and Telemetry Dashboard. Powered by a **CatBoost Machine Learning core** and dynamic rolling form analytics, this application delivers grid standing predictions via a premium, dark-mode immersive user interface mimicking real-world team paddock consoles.
 
-🚀 **Live Deployment:** COMING SOON
+🚀 **Live Deployment:** **CURRENTLY IN PIT BOX**
 
 ---
 
