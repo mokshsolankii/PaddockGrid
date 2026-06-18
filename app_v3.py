@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import pickle
 import os
+import base64
 
 # Set page config for a widescreen racing dashboard layout
 st.set_page_config(page_title="F1 Race Predictor V3", page_icon="🏎️", layout="wide")
@@ -84,7 +85,7 @@ OFFICIAL_F1_IMAGES = {
     "SAI": "https://media.formula1.com/content/dam/fom-website/drivers/C/CARSAI01_Carlos_Sainz/carsai01.png",
     "HUL": "https://media.formula1.com/content/dam/fom-website/drivers/N/NICHUL01_Nico_Hulkenberg/nichul01.png",
     "BOR": "https://media.formula1.com/content/dam/fom-website/drivers/G/GABBOR01_Gabriel_Bortoleto/gabbor01.png",
-    "ALO": "https://media.formula1.com/content/dam/fom-website/teams/Aston-Martin-Aramco-F1-Team/Logo.png", # Fallback map trace
+    "ALO": "https://media.formula1.com/content/dam/fom-website/teams/Aston-Martin-Aramco-F1-Team/Logo.png",
     "STR": "https://media.formula1.com/content/dam/fom-website/drivers/L/LANSTR01_Lance_Stroll/lanstr01.png",
     "PER": "https://media.formula1.com/content/dam/fom-website/drivers/S/SERPER01_Sergio_Perez/serper01.png",
     "BOT": "https://media.formula1.com/content/dam/fom-website/drivers/V/VALBOT01_Valtteri_Bottas/valbot01.png",
@@ -97,7 +98,6 @@ TEAM_COLORS = {
     "Cadillac F1 Team": "#FCE300", "Unknown": "#FFFFFF"
 }
 
-# Pure local filesystem tracking for logos to bypass network hotlinking blocks
 TEAM_LOGOS = {
     "Mercedes": "team_logos/mercedes.png",
     "Ferrari": "team_logos/ferrari.png",
@@ -112,6 +112,18 @@ TEAM_LOGOS = {
     "Cadillac F1 Team": "team_logos/cadillac.png",
     "Unknown": "team_logos/unknown.png"
 }
+
+# Helper function to convert local image to inline safe Base64 source
+def get_base64_image(image_path):
+    if os.path.exists(image_path):
+        try:
+            with open(image_path, "rb") as f:
+                data = f.read()
+            encoded = base64.b64encode(data).decode()
+            return f"data:image/png;base64,{encoded}"
+        except Exception:
+            pass
+    return ""
 
 @st.cache_resource
 def load_model_bundle():
@@ -146,7 +158,6 @@ available_races = get_available_races()
 race_name = st.sidebar.selectbox("Select Grand Prix", available_races)
 round_num = st.sidebar.number_input("Round Number (Optional)", min_value=1, max_value=25, value=8)
 
-# Helper function to smart-route image paths
 def get_driver_image(driver_code):
     local_path = f"drivers_images/{driver_code}.png"
     if os.path.exists(local_path):
@@ -173,36 +184,45 @@ if st.sidebar.button("🔮 Generate Grid Prediction", use_container_width=True):
                 p2_row = pred_df.iloc[1]
                 p2_img = get_driver_image(p2_row['driver'])
                 p2_color = TEAM_COLORS.get(p2_row['team'], "#FFFFFF")
-                p2_logo = TEAM_LOGOS.get(p2_row['team'], TEAM_LOGOS["Unknown"])
+                p2_logo_path = TEAM_LOGOS.get(p2_row['team'], TEAM_LOGOS["Unknown"])
+                p2_base64 = get_base64_image(p2_logo_path)
                 with podium_cols[0]:
                     st.markdown("<div style='border-top: 4px solid #C0C0C0; padding-top: 10px; margin-bottom: 15px;'><span class='pos-badge' style='background:#C0C0C0; color:#111;'>🥈 P2</span></div>", unsafe_allow_html=True)
                     st.image(p2_img, width=170)
                     st.markdown(f"### {p2_row['_name']}")
-                    st.markdown(f"<div style='display: flex; align-items: center; justify-content: center; gap: 8px;'><img src='{p2_logo}' width='25'/><div style='border-left: 4px solid {p2_color}; padding-left: 8px; color: #AAAAAA; font-weight: 500;'>{p2_row['team']}</div></div>", unsafe_allow_html=True)
+                    
+                    logo_html = f"<img src='{p2_base64}' width='25'/>" if p2_base64 else ""
+                    st.markdown(f"<div style='display: flex; align-items: center; justify-content: center; gap: 8px;'>{logo_html}<div style='border-left: 4px solid {p2_color}; padding-left: 8px; color: #AAAAAA; font-weight: 500;'>{p2_row['team']}</div></div>", unsafe_allow_html=True)
 
             # P1 (Center Card Winner)
             if len(pred_df) > 0:
                 p1_row = pred_df.iloc[0]
                 p1_img = get_driver_image(p1_row['driver'])
                 p1_color = TEAM_COLORS.get(p1_row['team'], "#FFFFFF")
-                p1_logo = TEAM_LOGOS.get(p1_row['team'], TEAM_LOGOS["Unknown"])
+                p1_logo_path = TEAM_LOGOS.get(p1_row['team'], TEAM_LOGOS["Unknown"])
+                p1_base64 = get_base64_image(p1_logo_path)
                 with podium_cols[1]:
                     st.markdown("<div style='border-top: 4px solid #FFD700; padding-top: 10px; margin-bottom: 15px;'><span class='pos-badge' style='background:#FFD700; color:#111;'>🏆 WINNER</span></div>", unsafe_allow_html=True)
                     st.image(p1_img, width=210)
                     st.markdown(f"<h2>{p1_row['_name']}</h2>", unsafe_allow_html=True)
-                    st.markdown(f"<div style='display: flex; align-items: center; justify-content: center; gap: 8px;'><img src='{p1_logo}' width='30'/><div style='border-left: 4px solid {p1_color}; padding-left: 8px; color: #FFFFFF; font-weight: bold;'>{p1_row['team']}</div></div>", unsafe_allow_html=True)
+                    
+                    logo_html = f"<img src='{p1_base64}' width='30'/>" if p1_base64 else ""
+                    st.markdown(f"<div style='display: flex; align-items: center; justify-content: center; gap: 8px;'>{logo_html}<div style='border-left: 4px solid {p1_color}; padding-left: 8px; color: #FFFFFF; font-weight: bold;'>{p1_row['team']}</div></div>", unsafe_allow_html=True)
 
             # P3 (Right Card)
             if len(pred_df) > 2:
                 p3_row = pred_df.iloc[2]
                 p3_img = get_driver_image(p3_row['driver'])
                 p3_color = TEAM_COLORS.get(p3_row['team'], "#FFFFFF")
-                p3_logo = TEAM_LOGOS.get(p3_row['team'], TEAM_LOGOS["Unknown"])
+                p3_logo_path = TEAM_LOGOS.get(p3_row['team'], TEAM_LOGOS["Unknown"])
+                p3_base64 = get_base64_image(p3_logo_path)
                 with podium_cols[2]:
                     st.markdown("<div style='border-top: 4px solid #CD7F32; padding-top: 10px; margin-bottom: 15px;'><span class='pos-badge' style='background:#CD7F32; color:#111;'>🥉 P3</span></div>", unsafe_allow_html=True)
                     st.image(p3_img, width=170)
                     st.markdown(f"### {p3_row['_name']}")
-                    st.markdown(f"<div style='display: flex; align-items: center; justify-content: center; gap: 8px;'><img src='{p3_logo}' width='25'/><div style='border-left: 4px solid {p3_color}; padding-left: 8px; color: #AAAAAA; font-weight: 500;'>{p3_row['team']}</div></div>", unsafe_allow_html=True)
+                    
+                    logo_html = f"<img src='{p3_base64}' width='25'/>" if p3_base64 else ""
+                    st.markdown(f"<div style='display: flex; align-items: center; justify-content: center; gap: 8px;'>{logo_html}<div style='border-left: 4px solid {p3_color}; padding-left: 8px; color: #AAAAAA; font-weight: 500;'>{p3_row['team']}</div></div>", unsafe_allow_html=True)
 
             st.markdown("<br><h3 style='text-align: left !important; margin-top: 25px;'>🏁 Full Predicted Grid Standing</h3>", unsafe_allow_html=True)
             st.markdown("---")
@@ -221,13 +241,16 @@ if st.sidebar.button("🔮 Generate Grid Prediction", use_container_width=True):
                 start_grid = f"Grid: {int(row['grid_position'])}"
                 
                 team_color = TEAM_COLORS.get(team_name, "#FFFFFF")
-                t_logo = TEAM_LOGOS.get(team_name, TEAM_LOGOS["Unknown"])
+                t_logo_path = TEAM_LOGOS.get(team_name, TEAM_LOGOS["Unknown"])
+                t_base64 = get_base64_image(t_logo_path)
+                
                 row_cols = st.columns([1, 2, 4, 2])
                 
                 row_cols[0].markdown(f"**{pos}**")
                 row_cols[1].markdown(driver_name)
                 
-                team_stripe_html = f"<div style='border-left: 6px solid {team_color}; padding-left: 12px; font-weight: 500; height: 30px; display: flex; align-items: center; gap: 10px; color: #EEEEEE;'><img src='{t_logo}' width='24'/>{team_name}</div>"
+                logo_html = f"<img src='{t_base64}' width='24'/>" if t_base64 else ""
+                team_stripe_html = f"<div style='border-left: 6px solid {team_color}; padding-left: 12px; font-weight: 500; height: 30px; display: flex; align-items: center; gap: 10px; color: #EEEEEE;'>{logo_html}{team_name}</div>"
                 row_cols[2].markdown(team_stripe_html, unsafe_allow_html=True)
                 
                 row_cols[3].markdown(start_grid)
