@@ -227,35 +227,20 @@ TRACK_METRICS = {
     "Spain (Barcelona)": {"name": "Circuit de Catalunya", "weather": "☀️ Hot | Track Temp: 39°C"},
     "Austria": {"name": "Red Bull Ring (Spielberg)", "weather": "🌤️ Part Cloud | Track Temp: 28°C"},
     "Great Britain": {"name": "Silverstone Circuit", "weather": "🌧️ Light Drizzle | Track Temp: 19°C"},
-    "Belgium": {"name": "Spa-Francorchamps", "weather": "☁️ Cloudy | Track Temp: 18°C"}
+    "Belgium": {"name": "Spa-Francorchamps", "weather": "☁️ Cloudy | Track Temp: 18°C"},
+    "Netherlands": {"name": "Circuit Zandvoort", "weather": "💨 Windy | Track Temp: 21°C"},
+    "Italy": {"name": "Autodromo Nazionale Monza", "weather": "☀️ Very Hot | Track Temp: 42°C"},
+    "Azerbaijan": {"name": "Baku City Circuit", "weather": "🌤️ Clear | Track Temp: 30°C"},
+    "Singapore": {"name": "Marina Bay Street Circuit", "weather": "🌧️ Humid & Wet | Track Temp: 29°C"},
+    "United States": {"name": "Circuit of the Americas", "weather": "☀️ Sunny | Track Temp: 37°C"},
+    "Mexico": {"name": "Autódromo Hermanos Rodríguez", "weather": "🌤️ Thin Air | Track Temp: 33°C"},
+    "Brazil": {"name": "Autódromo José Carlos Pace (Interlagos)", "weather": "🌧️ Unpredictable | Track Temp: 25°C"},
+    "Las Vegas": {"name": "Las Vegas Strip Circuit", "weather": "🌙 Cold Night | Track Temp: 14°C"},
+    "Qatar": {"name": "Lusail International Circuit", "weather": "🌙 Windy Night | Track Temp: 31°C"},
+    "Abu Dhabi": {"name": "Yas Marina Circuit", "weather": "🌙 Twlight Race | Track Temp: 28°C"}
 }
 
-def get_driver_image(driver_code):
-    local_path = f"drivers_images/{driver_code}.png"
-    if os.path.exists(local_path):
-        try:
-            with open(local_path, "rb") as img_file:
-                b64_string = base64.b64encode(img_file.read()).decode()
-            return f"data:image/png;base64,{b64_string}"
-        except Exception:
-            pass
-    return OFFICIAL_F1_IMAGES.get(driver_code, "https://media.formula1.com/d_driver_fallback_image.png")
-
-@st.cache_resource
-def load_model_bundle():
-    model_path = "f1_model_v3.pkl"
-    if not os.path.exists(model_path): return None
-    with open(model_path, "rb") as f: return pickle.load(f)
-
-bundle = load_model_bundle()
-if bundle is None: st.stop()
-model, ALL_FEATURES = bundle["model"], bundle["features"]
-
-# --- Header Branding ---
-st.markdown("<h1 style='color: #FF1801; font-weight: bold; margin-top: -10px; margin-bottom: 2px;'>Formula 1 Race Outcome Predictor V3</h1>", unsafe_allow_html=True)
-st.markdown("<p style='font-size: 1.0em; color: #888888; margin-bottom: 25px;'>Powered by CatBoost & Dynamic Rolling Form Analytics</p>", unsafe_allow_html=True)
-
-year = 2026
+# 2026 Complete F1 Schedule (All 24 Rounds)
 F1_2026_SCHEDULE = [
     {"round": 1, "race": "Australia", "date_str": "06-08 MAR", "date": datetime(2026, 3, 8)},
     {"round": 2, "race": "China", "date_str": "13-15 MAR", "date": datetime(2026, 3, 15)},
@@ -269,6 +254,16 @@ F1_2026_SCHEDULE = [
     {"round": 10, "race": "Austria", "date_str": "26-28 JUN", "date": datetime(2026, 6, 28)},
     {"round": 11, "race": "Great Britain", "date_str": "03-05 JUL", "date": datetime(2026, 7, 5)},
     {"round": 12, "race": "Belgium", "date_str": "17-19 JUL", "date": datetime(2026, 7, 19)},
+    {"round": 13, "race": "Netherlands", "date_str": "28-30 AUG", "date": datetime(2026, 8, 30)},
+    {"round": 14, "race": "Italy", "date_str": "04-06 SEP", "date": datetime(2026, 9, 6)},
+    {"round": 15, "race": "Azerbaijan", "date_str": "18-20 SEP", "date": datetime(2026, 9, 20)},
+    {"round": 16, "race": "Singapore", "date_str": "02-04 OCT", "date": datetime(2026, 10, 4)},
+    {"round": 17, "race": "United States", "date_str": "16-18 OCT", "date": datetime(2026, 10, 18)},
+    {"round": 18, "race": "Mexico", "date_str": "23-25 OCT", "date": datetime(2026, 10, 25)},
+    {"round": 19, "race": "Brazil", "date_str": "06-08 NOV", "date": datetime(2026, 11, 8)},
+    {"round": 20, "race": "Las Vegas", "date_str": "19-21 NOV", "date": datetime(2026, 11, 21)},
+    {"round": 21, "race": "Qatar", "date_str": "27-29 NOV", "date": datetime(2026, 11, 29)},
+    {"round": 22, "race": "Abu Dhabi", "date_str": "04-06 DEC", "date": datetime(2026, 12, 6)}
 ]
 
 current_date = datetime.now()
@@ -283,7 +278,6 @@ for i, event in enumerate(F1_2026_SCHEDULE):
         break
 
 race_name = next_race_name
-
 races_list = [f"Round {e['round']}: {e['race']}" for e in F1_2026_SCHEDULE]
 
 # ==================== ROW 1 CONSOLE INTERFACES ====================
@@ -418,7 +412,6 @@ with row1_cols[1]:
     )
     
     race_name = selected_option.split(": ")[-1]
-
     st.markdown("</div>", unsafe_allow_html=True)
 
 with row1_cols[2]:
@@ -479,6 +472,10 @@ st.markdown("<br>", unsafe_allow_html=True)
 # ==================== PREDICTED PODIUM ENGINE VIEW ====================
 if trigger_prediction:
     with st.spinner("Processing prediction..."):
+        bundle_path = "f1_model_v3.pkl"
+        if not os.path.exists(bundle_path):
+            st.error("Model file bundle not found.")
+            st.stop()
         try:
             import predict_race_v3
             pred_df = predict_race_v3.predict_race(2026, race_name, None)
