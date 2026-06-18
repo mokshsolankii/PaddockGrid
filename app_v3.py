@@ -247,9 +247,12 @@ TRACK_METRICS = {
 }
 
 def get_driver_image(driver_code):
-    local_path = f"drivers_images/{driver_code}.png"
-    if os.path.exists(local_path): return local_path
-    return OFFICIAL_F1_IMAGES.get(driver_code, "https://media.formula1.com/d_driver_fallback_image.png")
+
+    local_path = os.path.join("drivers_images", f"{driver_code}.png")
+    if os.path.exists(local_path):
+        return local_path
+    
+    return OFFICIAL_F1_IMAGES.get(driver_code, "https://raw.githubusercontent.com/Formula-1-Dashboard/f1-assets/main/drivers/default.png")
 
 @st.cache_resource
 def load_model_bundle():
