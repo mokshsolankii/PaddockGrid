@@ -287,9 +287,8 @@ races_list = [f"Round {e['round']}: {e['race']}" for e in F1_2026_SCHEDULE]
 row1_cols = st.columns(4)
 
 with row1_cols[0]:
+    # 100% Dynamic Metadata Extraction
     live_wdc_df = fetch_live_wdc_standings()
-    
-    # Dynamic Metadata Extraction
     if not live_wdc_df.empty:
         leader_name = live_wdc_df.iloc[0]["Driver"]
         leader_team = live_wdc_df.iloc[0]["Team"]
@@ -299,7 +298,7 @@ with row1_cols[0]:
         
     accent_color = TEAM_COLORS.get(leader_team, "#27F4D2")
     
-    # Base64 Image handling safely
+    # Base64 Image handling safely from your local assets
     import base64
     import os
     driver_b64_stream = ""
@@ -309,79 +308,69 @@ with row1_cols[0]:
     else:
         driver_b64_stream = "https://media.formula1.com/content/dam/fom-website/drivers/K/KIMANT01_Kimi_Antonelli/kimant01.png"
 
-    # Injecting CSS that creates a stacked sandwich structure inside the Column bounds
+    # Precise CSS Injection for 3D Layering and Floating Avatar Effect
     st.markdown("""
     <style>
-    /* 1. Base custom designer card */
-    .wdc-premium-card {
+    /* 1. Wrapper container to handle the overflow sizing without cutting the image */
+    .wdc-wrapper-box {
+        position: relative;
+        width: 100%;
+        height: 115px; /* Extra height to accommodate the 3D pop-out image */
+        display: flex;
+        align-items: flex-end; /* Keeps the card anchored to the bottom */
+    }
+
+    /* 2. Base custom designer card */
+    .wdc-contender-card {
         background: #181820;
         border: 1px solid rgba(255, 255, 255, 0.04);
         border-radius: 10px;
-        padding: 12px 16px;
+        padding: 12px 16px 12px 100px; /* Big left padding to clear space for the giant avatar */
         display: flex;
-        align-items: center;
-        min-height: 95px;
-        height: 95px;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+        height: 95px; /* Strict uniform dashboard box height */
         box-sizing: border-box;
-        position: relative;
-        z-index: 1;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     
-    /* Hover state on the visual card container itself */
-    div[data-testid="stColumn"]:nth-of-type(1):hover .wdc-premium-card {
+    /* 3. Pure 3D Floating Avatar Styling */
+    .wdc-3d-avatar {
+        position: absolute;
+        left: 12px;
+        bottom: 5px; /* Pushes the base slightly up inside the card */
+        width: 85px; /* Significantly bigger image size */
+        height: 95px; /* Extended height for vertical headshot aspect ratio */
+        object-fit: contain;
+        z-index: 10; /* Forces image to overlay strictly on top of the card border */
+        filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5)); /* Adds deep dimension beneath the driver */
+        transition: transform 0.3s ease, filter 0.3s ease;
+    }
+
+    /* Hover state for the entire layout block */
+    .wdc-wrapper-box:hover .wdc-contender-card {
         border-color: #FF1801 !important;
-        box-shadow: 0 0 18px rgba(255, 24, 1, 0.4) !important;
+        box-shadow: 0 0 20px rgba(255, 24, 1, 0.3) !important;
         background: #1c1c26 !important;
     }
-
-    /* 2. Formulating the Popover block setup strictly pinned inside this column */
-    div[data-testid="stColumn"]:nth-of-type(1) div[data-testid="stPopover"] {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 95px !important;
-        z-index: 5 !important;
-    }
-
-    /* 3. Turn the native click button completely invisible but covering the whole card area */
-    div[data-testid="stColumn"]:nth-of-type(1) div[data-testid="stPopover"] > button {
-        width: 100% !important;
-        height: 95px !important;
-        background: transparent !important;
-        border: none !important;
-        color: transparent !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-        cursor: pointer !important;
-    }
     
-    /* Clean overrides for active button states */
-    div[data-testid="stColumn"]:nth-of-type(1) div[data-testid="stPopover"] > button:focus,
-    div[data-testid="stColumn"]:nth-of-type(1) div[data-testid="stPopover"] > button:active {
-        background: transparent !important;
-        border: none !important;
-        color: transparent !important;
-        box-shadow: none !important;
+    /* Subtle push forward on the 3D driver picture during hover */
+    .wdc-wrapper-box:hover .wdc-3d-avatar {
+        transform: translateY(-4px) scale(1.03);
+        filter: drop-shadow(0 12px 16px rgba(255, 24, 1, 0.25));
     }
     </style>
     """, unsafe_allow_html=True)
 
-    # Layer A: The invisible popover click trigger (Sits perfectly on top)
-    with st.popover("Invisible Overlay Trigger", use_container_width=True):
-        st.markdown("<h3 style='color:#FF1801; text-align: center; font-weight: 600;'>🏆 Live WDC Standings</h3>", unsafe_allow_html=True)
-        st.markdown("<p style='color:#888; text-align: center; margin-top:-10px; font-size:0.9em; margin-bottom:15px;'>Official 2026 Rankings</p>", unsafe_allow_html=True)
-        st.dataframe(live_wdc_df.set_index("Pos"), use_container_width=True, height=400)
-
-    # Layer B: Premium Static HTML Render Card (Sits right below it, receiving interactions)
+    # Rendering the unified 3D Sandbox Card Matrix
     st.markdown(f"""
-    <div class="wdc-premium-card">
-        <img src="{driver_b64_stream}" style="width: 55px; height: 55px; border-radius: 50%; object-fit: cover; margin-right: 14px;" />
-        <div style="display: flex; flex-direction: column; justify-content: center; text-align: left !important;">
-            <div style="color: #888888; font-size: 0.7em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">WDC LEADER</div>
-            <div style="color: #FFFFFF; font-size: 1.15em; font-weight: bold; margin: 2px 0;">{leader_name}</div>
-            <div style="border-left: 3px solid {accent_color}; padding-left: 8px; font-size: 0.85em; color: #BBBBBB; margin-top: 2px;">{leader_team}</div>
+    <div class="wdc-wrapper-box">
+        <img class="wdc-3d-avatar" src="{driver_b64_stream}" />
+        <div class="wdc-contender-card">
+            <div style="color: #888888; font-size: 0.72em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.2;">WDC CONTENDER</div>
+            <div style="color: #FFFFFF; font-size: 1.25em; font-weight: bold; margin: 3px 0; line-height: 1.2;">{leader_name}</div>
+            <div style="border-left: 3px solid {accent_color}; padding-left: 8px; font-size: 0.85em; color: #BBBBBB; font-weight: 500; margin-top: 3px; line-height: 1.2;">{leader_team}</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
