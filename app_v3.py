@@ -6,7 +6,7 @@ import base64
 from datetime import datetime
 
 # Set page config for a widescreen racing dashboard layout
-st.set_page_config(page_title="F1 Race Predictor", page_icon="🏎️", layout="wide")
+st.set_page_config(page_title="F1 Race Predictor V3", page_icon="🏎️", layout="wide")
 
 # Custom global UI overrides for an elite F1 Telemetry Dashboard
 st.markdown(
