@@ -304,26 +304,35 @@ with row1_cols[0]:
     leader_code = "ANT"
     border_color = TEAM_COLORS.get(leader_team, "#FF1801")
 
-    # 1. Driver Card (Always Visible)
-    with st.container():
-        st.markdown(f"""
-        <div class='driver-card'>
-            <img src='{get_driver_image(leader_code)}' style='width: 55px; height: 55px; border-radius: 50%; object-fit: cover;' />
-            <div class='data-section'>
-                <div class='title-small'>WDC CONTENDER</div>
-                <div class='driver-name'>{leader_name}</div>
-                <div class='team-row' style='border-left: 4px solid {border_color};'>{leader_team}</div>
-            </div>
+    # CSS HACK: Popover ko card ke upar transparent karke baitha rahe hain
+    st.markdown("""
+    <style>
+    div[data-testid="stPopover"] {
+        position: absolute;
+        width: 100%;
+        height: 80px;
+        z-index: 99;
+        opacity: 0;
+        cursor: pointer;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    with st.popover("Standings", use_container_width=True):
+        st.markdown("<h3 style='color:#FF1801;'>🏆 Live WDC Standings</h3>", unsafe_allow_html=True)
+        st.dataframe(live_wdc_df.set_index("Pos"), use_container_width=True)
+
+    # Permanent Card (Jo dikhega)
+    st.markdown(f"""
+    <div class='driver-card'>
+        <img src='{get_driver_image(leader_code)}' style='width: 55px; height: 55px; border-radius: 50%; object-fit: cover;' />
+        <div class='data-section'>
+            <div class='title-small'>WDC CONTENDER</div>
+            <div class='driver-name'>{leader_name}</div>
+            <div class='team-row' style='border-left: 4px solid {border_color};'>{leader_team}</div>
         </div>
-        """, unsafe_allow_html=True)
-        
-        # 2. Standings Trigger (Hidden inside a clean popover button)
-        if st.button("View Standings", key="btn_standings", use_container_width=True):
-            pass # Button click dummy
-        
-        with st.popover("Detailed Standings", use_container_width=True):
-            st.markdown("<h3 style='color:#FF1801;'>🏆 Live WDC Standings</h3>", unsafe_allow_html=True)
-            st.dataframe(live_wdc_df.set_index("Pos"), use_container_width=True)
+    </div>
+    """, unsafe_allow_html=True)
 
 with row1_cols[1]:
     selected_race_box = st.selectbox("Select Grand Prix", races_list, index=default_index)
