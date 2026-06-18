@@ -282,18 +282,19 @@ F1_2026_SCHEDULE = [
     {"round": 10, "race": "Austria", "date_str": "26-28 JUN", "date": datetime(2026, 6, 28)},
     {"round": 11, "race": "Great Britain", "date_str": "03-05 JUL", "date": datetime(2026, 7, 5)},
     {"round": 12, "race": "Belgium", "date_str": "17-19 JUL", "date": datetime(2026, 7, 19)},
-    {"round": 13, "race": "Netherlands", "date_str": "28-30 AUG", "date": datetime(2026, 8, 30)},
-    {"round": 14, "race": "Italy", "date_str": "04-06 SEP", "date": datetime(2026, 9, 6)},
-    {"round": 15, "race": "Azerbaijan", "date_str": "18-20 SEP", "date": datetime(2026, 9, 20)},
-    {"round": 16, "race": "Singapore", "date_str": "02-04 OCT", "date": datetime(2026, 10, 4)},
-    {"round": 17, "race": "United States", "date_str": "16-18 OCT", "date": datetime(2026, 10, 18)},
-    {"round": 18, "race": "Mexico", "date_str": "23-25 OCT", "date": datetime(2026, 10, 25)},
-    {"round": 19, "race": "Brazil", "date_str": "06-08 NOV", "date": datetime(2026, 11, 8)},
-    {"round": 20, "race": "Las Vegas", "date_str": "19-21 NOV", "date": datetime(2026, 11, 21)},
-    {"round": 21, "race": "Qatar", "date_str": "27-29 NOV", "date": datetime(2026, 11, 29)},
-    {"round": 22, "race": "Abu Dhabi", "date_str": "04-06 DEC", "date": datetime(2026, 12, 6)}
+    {"round": 13, "race": "Hungary", "date_str": "24-26 JUL", "date": datetime(2026, 7, 26)},
+    {"round": 14, "race": "Netherlands", "date_str": "21-23 AUG", "date": datetime(2026, 8, 23)},
+    {"round": 15, "race": "Italy", "date_str": "04-06 SEP", "date": datetime(2026, 9, 6)},
+    {"round": 16, "race": "Spain (Madrid)", "date_str": "11-13 SEP", "date": datetime(2026, 9, 13)},
+    {"round": 17, "race": "Azerbaijan", "date_str": "24-26 SEP", "date": datetime(2026, 9, 26)},
+    {"round": 18, "race": "Singapore", "date_str": "09-11 OCT", "date": datetime(2026, 10, 11)},
+    {"round": 19, "race": "United States", "date_str": "23-25 OCT", "date": datetime(2026, 10, 25)},
+    {"round": 20, "race": "Mexico", "date_str": "30 OCT - 01 NOV", "date": datetime(2026, 11, 1)},
+    {"round": 21, "race": "Brazil", "date_str": "06-08 NOV", "date": datetime(2026, 11, 8)},
+    {"round": 22, "race": "Las Vegas", "date_str": "19-21 NOV", "date": datetime(2026, 11, 21)},
+    {"round": 23, "race": "Qatar", "date_str": "27-29 NOV", "date": datetime(2026, 11, 29)},
+    {"round": 24, "race": "Abu Dhabi", "date_str": "04-06 DEC", "date": datetime(2026, 12, 6)}
 ]
-
 current_date = datetime.now()
 next_race_name = "Austria"
 next_race_date_str = "26-28 JUN"
