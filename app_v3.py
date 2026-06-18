@@ -6,22 +6,62 @@ import os
 # Set page config for a widescreen racing dashboard layout
 st.set_page_config(page_title="F1 Race Predictor V3", page_icon="🏎️", layout="wide")
 
-# Custom global padding layout overrides to force center-alignment universally
+# Custom global UI overrides for an elite F1 Telemetry Dashboard
 st.markdown(
     """
     <style>
+    /* Global Background and Typography */
+    .stApp {
+        background-color: #0F0F14 !important;
+        color: #F3F4F6 !important;
+    }
     h1, h2, h3, h4, p, .stMarkdown {
         text-align: center !important;
+        font-family: 'Titillium Web', 'Segoe UI', sans-serif !important;
     }
+    
+    /* Global Center Alignment for Columns */
     div[data-testid="stVerticalBlock"] {
         align-items: center !important;
         text-align: center !important;
     }
+    
+    /* Premium Minimalist 3D Podium Cards */
+    [data-testid="stHorizontalBlock"] > div {
+        background: #181820 !important;
+        border-radius: 16px !important;
+        padding: 24px 20px !important;
+        border: 1px solid rgba(255, 255, 255, 0.03) !important;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.45) !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    
+    /* Interactive Hover Glow */
+    [data-testid="stHorizontalBlock"] > div:hover {
+        transform: translateY(-8px) !important;
+        border-color: rgba(255, 24, 1, 0.2) !important;
+        box-shadow: 0 30px 60px rgba(255, 24, 1, 0.1) !important;
+    }
+    
+    /* Pristine Center-Aligned Driver Images */
     div[data-testid="stImage"] {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        margin: 0 auto !important;
+        margin: 20px auto !important;
+        filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) !important;
+    }
+    
+    /* Custom Badge Styles for Positions */
+    .pos-badge {
+        background: #FF1801;
+        color: white;
+        padding: 4px 14px;
+        border-radius: 20px;
+        font-size: 0.85em;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
     </style>
     """,
@@ -93,10 +133,8 @@ round_num = st.sidebar.number_input("Round Number (Optional)", min_value=1, max_
 # Helper function to smart-route image paths
 def get_driver_image(driver_code):
     local_path = f"drivers_images/{driver_code}.png"
-    # If manually downloaded local file exists, use it first
     if os.path.exists(local_path):
         return local_path
-    # Otherwise fallback to official web link or global silhouette avatar
     return OFFICIAL_F1_IMAGES.get(driver_code, "https://media.formula1.com/d_driver_fallback_image.png")
 
 if st.sidebar.button("🔮 Generate Grid Prediction", use_container_width=True):
@@ -120,7 +158,7 @@ if st.sidebar.button("🔮 Generate Grid Prediction", use_container_width=True):
                 p2_img = get_driver_image(p2_row['driver'])
                 p2_color = TEAM_COLORS.get(p2_row['team'], "#FFFFFF")
                 with podium_cols[0]:
-                    st.markdown("#### 🥈 2nd Place")
+                    st.markdown("<div style='border-top: 4px solid #C0C0C0; padding-top: 10px; margin-bottom: 15px;'><span class='pos-badge' style='background:#C0C0C0; color:#111;'>🥈 P2</span></div>", unsafe_allow_html=True)
                     st.image(p2_img, width=170)
                     st.markdown(f"### {p2_row['_name']}")
                     st.markdown(f"<div style='display: inline-block; border-left: 4px solid {p2_color}; padding-left: 8px; color: #AAAAAA; font-weight: 500;'>{p2_row['team']}</div>", unsafe_allow_html=True)
@@ -131,7 +169,7 @@ if st.sidebar.button("🔮 Generate Grid Prediction", use_container_width=True):
                 p1_img = get_driver_image(p1_row['driver'])
                 p1_color = TEAM_COLORS.get(p1_row['team'], "#FFFFFF")
                 with podium_cols[1]:
-                    st.markdown("<h3 style='color: #FFD700; margin-bottom: 5px;'>🥇 WINNER</h3>", unsafe_allow_html=True)
+                    st.markdown("<div style='border-top: 4px solid #FFD700; padding-top: 10px; margin-bottom: 15px;'><span class='pos-badge' style='background:#FFD700; color:#111;'>🏆 WINNER</span></div>", unsafe_allow_html=True)
                     st.image(p1_img, width=210)
                     st.markdown(f"<h2>{p1_row['_name']}</h2>", unsafe_allow_html=True)
                     st.markdown(f"<div style='display: inline-block; border-left: 4px solid {p1_color}; padding-left: 8px; color: #FFFFFF; font-weight: bold;'>{p1_row['team']}</div>", unsafe_allow_html=True)
@@ -142,7 +180,7 @@ if st.sidebar.button("🔮 Generate Grid Prediction", use_container_width=True):
                 p3_img = get_driver_image(p3_row['driver'])
                 p3_color = TEAM_COLORS.get(p3_row['team'], "#FFFFFF")
                 with podium_cols[2]:
-                    st.markdown("#### 🥉 3rd Place")
+                    st.markdown("<div style='border-top: 4px solid #CD7F32; padding-top: 10px; margin-bottom: 15px;'><span class='pos-badge' style='background:#CD7F32; color:#111;'>🥉 P3</span></div>", unsafe_allow_html=True)
                     st.image(p3_img, width=170)
                     st.markdown(f"### {p3_row['_name']}")
                     st.markdown(f"<div style='display: inline-block; border-left: 4px solid {p3_color}; padding-left: 8px; color: #AAAAAA; font-weight: 500;'>{p3_row['team']}</div>", unsafe_allow_html=True)
