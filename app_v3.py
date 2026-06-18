@@ -91,18 +91,18 @@ st.markdown(
     }
     
     /* Premium Minimalist 3D Podium Cards & Grid Rows Compressed Layout */
-[data-testid="stHorizontalBlock"] > div {
-    background: #181820 !important;
-    border-radius: 10px !important; /* Slightly sharper corner mapping */
-    padding: 8px 12px !important;    /* Reduced padding to compress row block height */
-    border: 1px solid rgba(255, 255, 255, 0.03) !important;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
-}
-[data-testid="stHorizontalBlock"] > div:hover {
-    transform: translateY(-2px) !important; /* Minimal bounce elevation */
-    border-color: rgba(255, 24, 1, 0.2) !important;
-}
+    [data-testid="stHorizontalBlock"] > div {
+        background: #181820 !important;
+        border-radius: 10px !important; 
+        padding: 8px 12px !important;    
+        border: 1px solid rgba(255, 255, 255, 0.03) !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    [data-testid="stHorizontalBlock"] > div:hover {
+        transform: translateY(-2px) !important; 
+        border-color: rgba(255, 24, 1, 0.2) !important;
+    }
     
     /* Pristine Center-Aligned Driver Images */
     div[data-testid="stImage"] {
@@ -215,7 +215,7 @@ def get_base64_logo_html(team_name, border_color, centered=False):
         with open(target_path, "rb") as img_file:
             b64_string = base64.b64encode(img_file.read()).decode()
         
-        # Strict case-insensitive matching string parameter override to boost McLaren scale layout
+        # Dynamic Scaler for McLaren logo size optimization
         logo_height = "38px" if "mclaren" in team_name.lower() else "20px"
         
         # Apply strict symmetrical centering context mechanics if requested
@@ -313,33 +313,66 @@ with row1_cols[0]:
     live_wdc_df = fetch_live_wdc_standings()
     leader_name = live_wdc_df.iloc[0]["Driver"] if not live_wdc_df.empty else "Kimi Antonelli"
     leader_team = live_wdc_df.iloc[0]["Team"] if not live_wdc_df.empty else "Mercedes"
+    leader_code = "ANT"
+    border_color = TEAM_COLORS.get(leader_team, "#FF1801")
     
-    with st.popover(f"👤 WDC Leader: {leader_name}", use_container_width=True):
-        st.markdown("<h3 style='color:#FF1801; text-align: center;'>🏆 Live WDC Standings</h3>", unsafe_allow_html=True)
-        st.markdown("---")
-        
-        lead_cols = st.columns([2, 1])
-        with lead_cols[0]:
-            st.markdown(f"""
-            <div style='text-align: left !important; padding-top: 10px;'>
-                <span style='color: #FF1801; font-size: 0.85em; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;'>CURRENT WDC LEADER</span>
-                <h2 style='margin: 5px 0 !important; color: #FFFFFF; font-size: 1.8em; text-align: left !important;'>{leader_name}</h2>
-                <span style='color: #27F4D2; font-size: 1.1em; font-weight: 500;'>🏎️ {leader_team}</span>
+    st.markdown("""
+    <style>
+    .driver-card {
+        background: #181820;
+        border-radius: 12px;
+        padding: 12px;
+        display: flex;
+        align-items: center;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+        width: 100%;
+    }
+    .driver-card:hover {
+        box-shadow: 0 0 15px rgba(255, 24, 1, 0.6);
+        border-color: #FF1801;
+    }
+    .data-section {
+        margin-left: 15px;
+        text-align: left;
+    }
+    .title-small {
+        color: #888;
+        font-size: 0.7em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .driver-name {
+        font-size: 1.1em;
+        font-weight: bold;
+        color: #FFF;
+        margin: 2px 0;
+    }
+    .team-row {
+        border-left: 4px solid #FF1801;
+        padding-left: 8px;
+        font-size: 0.85em;
+        color: #BBB;
+        margin-top: 4px;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
+    with st.popover("WDC Leader Profile", use_container_width=True):
+        st.markdown(f"""
+        <div class='driver-card'>
+            <img src='{get_driver_image(leader_code)}' style='width: 55px; height: 55px; border-radius: 50%; object-fit: cover;' />
+            <div class='data-section'>
+                <div class='title-small'>WDC CONTENDER</div>
+                <div class='driver-name'>{leader_name}</div>
+                <div class='team-row'>{leader_team}</div>
             </div>
-            """, unsafe_allow_html=True)
-        with lead_cols[1]:
-            st.image(get_driver_image("ANT"), width=120)
-            
-        st.markdown("<br>", unsafe_allow_html=True)
-        st.dataframe(
-            live_wdc_df.set_index("Pos"), 
-            use_container_width=True,
-            column_config={
-                "Driver": st.column_config.TextColumn("Driver Profile"),
-                "Team": st.column_config.TextColumn("Constructor/Team"),
-                "Points": st.column_config.NumberColumn("Total Points", format="%d 🏁")
-            }
-        )
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("<h3 style='color:#FF1801; text-align: center; margin-top: 20px;'>🏆 Live WDC Standings</h3>", unsafe_allow_html=True)
+        st.dataframe(live_wdc_df.set_index("Pos"), use_container_width=True)
 
 with row1_cols[1]:
     selected_race_box = st.selectbox("Select Grand Prix", races_list, index=default_index)
