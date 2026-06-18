@@ -164,7 +164,7 @@ OFFICIAL_F1_IMAGES = {
     "GAS": "https://media.formula1.com/content/dam/fom-website/drivers/P/PIEGAS01_Pierre_Gasly/piegas01.png",
 }
 
-# Mapping Matrix for Line Borders
+# Updated Matrix to perfectly map exact names from backend model data strings
 TEAM_COLORS = {
     "Mercedes": "#27F4D2", "Mercedes-AMG Petronas F1 Team": "#27F4D2",
     "Ferrari": "#E8002D", "Scuderia Ferrari HP": "#E8002D",
@@ -172,14 +172,14 @@ TEAM_COLORS = {
     "Red Bull Racing": "#3671C6", "Oracle Red Bull Racing": "#3671C6",
     "Alpine": "#FF87BC", "BWT Alpine F1 Team": "#FF87BC",
     "Racing Bulls": "#66C2FF", "Visa Cash App RB F1 Team": "#66C2FF", "Visa Cash App Racing Bulls F1 Team": "#66C2FF",
-    "Haas": "#B6BABD", "MoneyGram Haas F1 Team": "#B6BABD",
+    "Haas": "#B6BABD", "MoneyGram Haas F1 Team": "#B6BABD", "TGR Haas F1 Team": "#B6BABD",
     "Cadillac": "#FFFFFF", "Cadillac Racing": "#FFFFFF",
     "Audi": "#F51A4A", "Kick Sauber": "#F51A4A", "Stake F1 Team Kick Sauber": "#F51A4A",
-    "Aston Martin": "#229971", "Aston Martin Aramco F1 Team": "#229971",
-    "Williams": "#64C4FF", "Williams Racing": "#64C4FF"
+    "Aston Martin": "#229971", "Aston Martin Aramco F1 Team": "#229971", "Aston Martin Aramco F1 Team": "#229971",
+    "Williams": "#64C4FF", "Williams Racing": "#64C4FF", "Atlassian Williams F1 Team": "#64C4FF"
 }
 
-# Strict Filepath Mapping for local folder base64 embedding
+# Updated to directly bind "TGR Haas" and "Atlassian Williams" strings safely to correct files
 TEAM_LOGOS_MAPPING = {
     "Mercedes": "team_logos/mercedes.png", "Mercedes-AMG Petronas F1 Team": "team_logos/mercedes.png",
     "Ferrari": "team_logos/ferrari.png", "Scuderia Ferrari HP": "team_logos/ferrari.png",
@@ -188,20 +188,24 @@ TEAM_LOGOS_MAPPING = {
     "Oracle Red Bull Racing": "team_logos/redbull.png",
     "Alpine": "team_logos/alpine.png", "BWT Alpine F1 Team": "team_logos/alpine.png",
     "Racing Bulls": "team_logos/rb.png", "Visa Cash App RB F1 Team": "team_logos/rb.png", "Visa Cash App Racing Bulls F1 Team": "team_logos/rb.png",
-    "Haas": "team_logos/haas.png", "MoneyGram Haas F1 Team": "team_logos/haas.png",
+    "Haas": "team_logos/haas.png", "MoneyGram Haas F1 Team": "team_logos/haas.png", "TGR Haas F1 Team": "team_logos/haas.png",
     "Cadillac": "team_logos/cadillac.png", "Cadillac Racing": "team_logos/cadillac.png",
     "Audi": "team_logos/audi.png", "Kick Sauber": "team_logos/audi.png",
-    "Aston Martin": "team_logos/astonmartin.png", "Aston Martin Aramco F1 Team": "team_logos/astonmartin.png",
-    "Williams": "team_logos/williams.png", "Williams Racing": "team_logos/williams.png"
+    "Aston Martin": "team_logos/astonmartin.png", "Aston Martin Aramco F1 Team": "team_logos/astonmartin.png", "Aston Martin Aramco F1 Team": "team_logos/astonmartin.png",
+    "Williams": "team_logos/williams.png", "Williams Racing": "team_logos/williams.png", "Atlassian Williams F1 Team": "team_logos/williams.png"
 }
 
-# Convert image asset cleanly to inline text base64 string to keep columns identical 
 def get_base64_logo_html(team_name, border_color):
     target_path = TEAM_LOGOS_MAPPING.get(team_name, "")
     
-    # Auto fallback scan to avoid breaking
+    # Auto substring fallback scanner logic in case names have any extra spaces
     if not os.path.exists(target_path):
         clean_key = team_name.split()[0].lower()
+        if "williams" in team_name.lower(): clean_key = "williams"
+        elif "haas" in team_name.lower(): clean_key = "haas"
+        elif "alpine" in team_name.lower(): clean_key = "alpine"
+        elif "racing" in team_name.lower() and "bulls" in team_name.lower(): clean_key = "rb"
+        
         if os.path.exists("team_logos"):
             for filename in os.listdir("team_logos"):
                 if clean_key in filename.lower() and filename.endswith(".png"):
@@ -217,7 +221,6 @@ def get_base64_logo_html(team_name, border_color):
             <span style='font-size: 1em; font-weight: 500; color: #F3F4F6;'>{team_name}</span>
         </div>
         """
-    # Text backup layer if file missing completely
     return f"<div style='border-left: 6px solid {border_color}; padding-left: 12px; text-align: left !important;'>{team_name}</div>"
 
 TRACK_METRICS = {
@@ -416,14 +419,13 @@ if trigger_prediction:
             st.markdown("<br><h3 style='margin-top: 25px;'>🏁 Full Predicted Grid Standing</h3>", unsafe_allow_html=True)
             st.markdown("---")
             
-            # --- 100% RESTORED original discrete row columns width [1, 2, 4, 2] ---
             table_container_width = [1, 2, 4, 2]
             for idx, row in pred_df.iterrows():
                 row_cols = st.columns(table_container_width)
                 row_cols[0].markdown(f"**P{row['predicted_position']}**")
                 row_cols[1].markdown(row['_name'])
                 
-                # Dynamic horizontal injection of base64 binary logo layout directly into Col 2 without splitting layout 
+                # Dynamic horizontal rendering inside column 2 using verified base64 string formats
                 border_color = TEAM_COLORS.get(row['team'], '#FFFFFF')
                 logo_html_block = get_base64_logo_html(row['team'], border_color)
                 row_cols[2].markdown(logo_html_block, unsafe_allow_html=True)
