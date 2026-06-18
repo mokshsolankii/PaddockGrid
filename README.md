@@ -41,10 +41,10 @@ The system is engineered as a decoupled, multi-stage data processing and machine
 To clone and spin up this elite F1 telemetry instance locally, run the following sequence in your terminal:
 
 ```bash
-# 1. Clone the repository
 git clone [https://github.com/mokshsolanki/F1-Race-Outcome-Predictor.git](https://github.com/mokshsolanki/F1-Race-Outcome-Predictor.git)
 cd F1-Race-Outcome-Predictor
-
+```bash
+```bash
 # 2. Install pristine package dependencies
 pip install -r requirements.txt
 
