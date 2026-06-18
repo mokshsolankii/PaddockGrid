@@ -43,7 +43,7 @@ def fetch_live_wdc_standings():
             "Pos": pos_list, "Driver": driver_list, "Team": team_list, "Points": points_list
         })
     except Exception as scrape_error:
-        # --- METHOD 3: 100% Validated 2026 Official Lineup Array Backup (Fixed to exact 22 scale) ---
+        # --- METHOD 3: 100% Validated 2026 Official Lineup Array Backup ---
         return pd.DataFrame({
             "Pos": list(range(1, 23)),
             "Driver": [
@@ -163,9 +163,34 @@ OFFICIAL_F1_IMAGES = {
     "GAS": "https://media.formula1.com/content/dam/fom-website/drivers/P/PIEGAS01_Pierre_Gasly/piegas01.png",
 }
 
+# Enhanced Mapping Matrix for Backward Compatibility
 TEAM_COLORS = {
-    "Mercedes": "#27F4D2", "Ferrari": "#E8002D", "McLaren": "#FF8000", "Red Bull Racing": "#3671C6",
-    "Alpine": "#FF87BC", "Racing Bulls": "#66C2FF", "Haas": "#B6BABD", "Cadillac": "#FFFFFF", "Audi": "#F51A4A"
+    "Mercedes": "#27F4D2", "Mercedes-AMG Petronas F1 Team": "#27F4D2",
+    "Ferrari": "#E8002D", "Scuderia Ferrari HP": "#E8002D",
+    "McLaren": "#FF8000", "McLaren F1 Team": "#FF8000",
+    "Red Bull Racing": "#3671C6", "Oracle Red Bull Racing": "#3671C6",
+    "Alpine": "#FF87BC", "BWT Alpine F1 Team": "#FF87BC",
+    "Racing Bulls": "#66C2FF", "Visa Cash App RB F1 Team": "#66C2FF",
+    "Haas": "#B6BABD", "MoneyGram Haas F1 Team": "#B6BABD",
+    "Cadillac": "#FFFFFF", "Cadillac Racing": "#FFFFFF",
+    "Audi": "#F51A4A", "Kick Sauber": "#F51A4A", "Stake F1 Team Kick Sauber": "#F51A4A",
+    "Aston Martin": "#229971", "Aston Martin Aramco F1 Team": "#229971",
+    "Williams": "#64C4FF", "Williams Racing": "#64C4FF"
+}
+
+# 🏁 Local Team Logos mapping mechanism to restore indicators seamlessly
+TEAM_LOGOS = {
+    "Mercedes": "drivers_images/mercedes_logo.png", "Mercedes-AMG Petronas F1 Team": "drivers_images/mercedes_logo.png",
+    "Ferrari": "drivers_images/ferrari_logo.png", "Scuderia Ferrari HP": "drivers_images/ferrari_logo.png",
+    "McLaren": "drivers_images/mclaren_logo.png", "McLaren F1 Team": "drivers_images/mclaren_logo.png",
+    "Red Bull Racing": "drivers_images/redbull_logo.png", "Oracle Red Bull Racing": "drivers_images/redbull_logo.png",
+    "Alpine": "drivers_images/alpine_logo.png", "BWT Alpine F1 Team": "drivers_images/alpine_logo.png",
+    "Racing Bulls": "drivers_images/rb_logo.png", "Visa Cash App RB F1 Team": "drivers_images/rb_logo.png",
+    "Haas": "drivers_images/haas_logo.png", "MoneyGram Haas F1 Team": "drivers_images/haas_logo.png",
+    "Cadillac": "drivers_images/cadillac_logo.png", "Cadillac Racing": "drivers_images/cadillac_logo.png",
+    "Audi": "drivers_images/audi_logo.png", "Kick Sauber": "drivers_images/audi_logo.png",
+    "Aston Martin": "drivers_images/aston_logo.png", "Aston Martin Aramco F1 Team": "drivers_images/aston_logo.png",
+    "Williams": "drivers_images/williams_logo.png", "Williams Racing": "drivers_images/williams_logo.png"
 }
 
 TRACK_METRICS = {
@@ -188,6 +213,15 @@ def get_driver_image(driver_code):
     if os.path.exists(local_path): 
         return local_path
     return OFFICIAL_F1_IMAGES.get(driver_code, "https://media.formula1.com/d_driver_fallback_image.png")
+
+# 🏁 Injecting a fallback helper to find logo cleanly
+def get_team_logo_html(team_name):
+    logo_path = TEAM_LOGOS.get(team_name, "")
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as f:
+            encoded = base64.b64encode(f.read()).decode()
+        return f"<img src='data:image/png;base64,{encoded}' style='height:18px; margin: 0 8px; vertical-align:middle;' />"
+    return ""
 
 @st.cache_resource
 def load_model_bundle():
@@ -369,7 +403,12 @@ if trigger_prediction:
                 row_cols = st.columns(table_container_width)
                 row_cols[0].markdown(f"**P{row['predicted_position']}**")
                 row_cols[1].markdown(row['_name'])
-                row_cols[2].markdown(f"<div style='border-left: 6px solid {TEAM_COLORS.get(row['team'], '#FFFFFF')}; padding-left: 12px;'>{row['team']}</div>", unsafe_allow_html=True)
+                
+                # Render team colored border line ALONG WITH the base64 dynamic team logo image
+                logo_html = get_team_logo_html(row['team'])
+                border_color = TEAM_COLORS.get(row['team'], '#FFFFFF')
+                row_cols[2].markdown(f"<div style='border-left: 6px solid {border_color}; padding-left: 12px; display: flex; align-items: center;'>{logo_html} {row['team']}</div>", unsafe_allow_html=True)
+                
                 row_cols[3].markdown(f"Grid: {int(row['grid_position'])}")
                 
             st.success(f"📊 Prediction output processed cleanly.")
