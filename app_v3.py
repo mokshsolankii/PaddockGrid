@@ -175,11 +175,11 @@ TEAM_COLORS = {
     "Haas": "#B6BABD", "MoneyGram Haas F1 Team": "#B6BABD", "TGR Haas F1 Team": "#B6BABD",
     "Cadillac": "#FFFFFF", "Cadillac Racing": "#FFFFFF",
     "Audi": "#F51A4A", "Kick Sauber": "#F51A4A", "Stake F1 Team Kick Sauber": "#F51A4A",
-    "Aston Martin": "#229971", "Aston Martin Aramco F1 Team": "#229971", "Aston Martin Aramco F1 Team": "#229971",
+    "Aston Martin": "#229971", "Aston Martin Aramco F1 Team": "#229971",
     "Williams": "#64C4FF", "Williams Racing": "#64C4FF", "Atlassian Williams F1 Team": "#64C4FF"
 }
 
-# Updated to directly bind "TGR Haas" and "Atlassian Williams" strings safely to correct files
+# Updated to directly bind strings safely to correct files
 TEAM_LOGOS_MAPPING = {
     "Mercedes": "team_logos/mercedes.png", "Mercedes-AMG Petronas F1 Team": "team_logos/mercedes.png",
     "Ferrari": "team_logos/ferrari.png", "Scuderia Ferrari HP": "team_logos/ferrari.png",
@@ -191,11 +191,11 @@ TEAM_LOGOS_MAPPING = {
     "Haas": "team_logos/haas.png", "MoneyGram Haas F1 Team": "team_logos/haas.png", "TGR Haas F1 Team": "team_logos/haas.png",
     "Cadillac": "team_logos/cadillac.png", "Cadillac Racing": "team_logos/cadillac.png",
     "Audi": "team_logos/audi.png", "Kick Sauber": "team_logos/audi.png",
-    "Aston Martin": "team_logos/astonmartin.png", "Aston Martin Aramco F1 Team": "team_logos/astonmartin.png", "Aston Martin Aramco F1 Team": "team_logos/astonmartin.png",
+    "Aston Martin": "team_logos/astonmartin.png", "Aston Martin Aramco F1 Team": "team_logos/astonmartin.png",
     "Williams": "team_logos/williams.png", "Williams Racing": "team_logos/williams.png", "Atlassian Williams F1 Team": "team_logos/williams.png"
 }
 
-def get_base64_logo_html(team_name, border_color):
+def get_base64_logo_html(team_name, border_color, centered=False):
     target_path = TEAM_LOGOS_MAPPING.get(team_name, "")
     
     # Auto substring fallback scanner logic in case names have any extra spaces
@@ -215,13 +215,28 @@ def get_base64_logo_html(team_name, border_color):
     if os.path.exists(target_path):
         with open(target_path, "rb") as img_file:
             b64_string = base64.b64encode(img_file.read()).decode()
-        return f"""
-        <div style='border-left: 6px solid {border_color}; padding-left: 12px; display: inline-flex; align-items: center; justify-content: flex-start; text-align: left !important; width: 100%; height: 28px;'>
-            <img src='data:image/png;base64,{b64_string}' style='height: 20px; width: auto; margin-right: 10px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));' />
-            <span style='font-size: 1em; font-weight: 500; color: #F3F4F6;'>{team_name}</span>
-        </div>
-        """
-    return f"<div style='border-left: 6px solid {border_color}; padding-left: 12px; text-align: left !important;'>{team_name}</div>"
+        
+        # Dynamic Scaler for McLaren logo size optimization
+        logo_height = "28px" if "mclaren" in team_name.lower() else "20px"
+        
+        # Apply strict symmetrical centering context mechanics if requested
+        if centered:
+            return f"""
+            <div style='display: inline-flex; align-items: center; justify-content: center; text-align: center !important; width: 100%; height: 28px;'>
+                <img src='data:image/png;base64,{b64_string}' style='height: {logo_height}; width: auto; margin-right: 8px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));' />
+                <span style='font-size: 1em; font-weight: 500; color: #F3F4F6;'>{team_name}</span>
+            </div>
+            """
+        else:
+            return f"""
+            <div style='border-left: 6px solid {border_color}; padding-left: 6px; display: inline-flex; align-items: center; justify-content: flex-start; text-align: left !important; width: 100%; height: 28px;'>
+                <img src='data:image/png;base64,{b64_string}' style='height: {logo_height}; width: auto; margin-right: 10px; vertical-align: middle; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));' />
+                <span style='font-size: 1em; font-weight: 500; color: #F3F4F6;'>{team_name}</span>
+            </div>
+            """
+    
+    align_style = "text-align: center !important;" if centered else f"border-left: 6px solid {border_color}; padding-left: 6px; text-align: left !important;"
+    return f"<div style='{align_style}'>{team_name}</div>"
 
 TRACK_METRICS = {
     "Australia": {"name": "Albert Park Circuit", "weather": "☀️ Sunny | Track Temp: 34°C"},
@@ -395,9 +410,7 @@ if trigger_prediction:
             if len(pred_df) > 1:
                 p2_row = pred_df.iloc[1]
                 p2_color = TEAM_COLORS.get(p2_row['team'], '#FFFFFF')
-                p2_logo_html = get_base64_logo_html(p2_row['team'], p2_color)
-                # Centering override for the HTML card layout
-                p2_logo_centered = p2_logo_html.replace("justify-content: flex-start;", "justify-content: center;").replace("text-align: left !important;", "text-align: center !important;")
+                p2_logo_centered = get_base64_logo_html(p2_row['team'], p2_color, centered=True)
                 with podium_cols[0]:
                     st.markdown("<div><span class='pos-badge' style='background:#C0C0C0; color:#111;'>🥈 P2</span></div>", unsafe_allow_html=True)
                     st.image(get_driver_image(p2_row['driver']), width=170)
@@ -407,9 +420,7 @@ if trigger_prediction:
             if len(pred_df) > 0:
                 p1_row = pred_df.iloc[0]
                 p1_color = TEAM_COLORS.get(p1_row['team'], '#FFFFFF')
-                p1_logo_html = get_base64_logo_html(p1_row['team'], p1_color)
-                # Centering override for the HTML card layout
-                p1_logo_centered = p1_logo_html.replace("justify-content: flex-start;", "justify-content: center;").replace("text-align: left !important;", "text-align: center !important;")
+                p1_logo_centered = get_base64_logo_html(p1_row['team'], p1_color, centered=True)
                 with podium_cols[1]:
                     st.markdown("<div><span class='pos-badge' style='background:#FFD700; color:#111;'>🏆 WINNER</span></div>", unsafe_allow_html=True)
                     st.image(get_driver_image(p1_row['driver']), width=210)
@@ -419,9 +430,7 @@ if trigger_prediction:
             if len(pred_df) > 2:
                 p3_row = pred_df.iloc[2]
                 p3_color = TEAM_COLORS.get(p3_row['team'], '#FFFFFF')
-                p3_logo_html = get_base64_logo_html(p3_row['team'], p3_color)
-                # Centering override for the HTML card layout
-                p3_logo_centered = p3_logo_html.replace("justify-content: flex-start;", "justify-content: center;").replace("text-align: left !important;", "text-align: center !important;")
+                p3_logo_centered = get_base64_logo_html(p3_row['team'], p3_color, centered=True)
                 with podium_cols[2]:
                     st.markdown("<div><span class='pos-badge' style='background:#CD7F32; color:#111;'>🥉 P3</span></div>", unsafe_allow_html=True)
                     st.image(get_driver_image(p3_row['driver']), width=170)
@@ -438,7 +447,7 @@ if trigger_prediction:
                 row_cols[1].markdown(row['_name'])
                 
                 border_color = TEAM_COLORS.get(row['team'], '#FFFFFF')
-                logo_html_block = get_base64_logo_html(row['team'], border_color)
+                logo_html_block = get_base64_logo_html(row['team'], border_color, centered=False)
                 row_cols[2].markdown(logo_html_block, unsafe_allow_html=True)
                 
                 row_cols[3].markdown(f"Grid: {int(row['grid_position'])}")
