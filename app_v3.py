@@ -646,8 +646,8 @@ if trigger_prediction:
                 p3_logo_centered = get_base64_logo_html(p3_row['team'], p3_color, centered=True)
                 with podium_cols[2]:
                     st.markdown("""
-<div style="
-    background-color: rgba(39, 244, 210, 0.1); 
+<div style=
+    "background-color: rgba(39, 244, 210, 0.1); 
     border: 1px solid rgba(39, 244, 210, 0.3); 
     padding: 12px 16px; 
     border-radius: 8px; 
