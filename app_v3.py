@@ -510,15 +510,31 @@ with row1_cols[2]:
     """, unsafe_allow_html=True)
 
 with row1_cols[3]:
-    # WCC Leader defaults (Jaise live Mercedes chal rahi hai tab se)
+    # WCC Leader defaults
     wcc_leader_team = "Mercedes" 
     wcc_accent_color = TEAM_COLORS.get(wcc_leader_team, "#27F4D2")
+    
+    # Aapke code mein upar functions mein check karo, 'get_base64_logo_html' call use karenge
+    # Agar function setup centered ya border format mein hai, toh hum clean left-aligned use karenge:
+    logo_path = "team_logos/mercedes.png"
+    logo_html = ""
+    
+    if os.path.exists(logo_path):
+        with open(logo_path, "rb") as img_file:
+            b64_string = base64.b64encode(img_file.read()).decode()
+        logo_html = f'<img src="data:image/png;base64,{b64_string}" style="height: 24px; width: auto; margin-right: 12px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));" />'
+    else:
+        # Fallback agar file na mile toh CDN se mercedes logo fetch karega
+        logo_html = '<img src="https://media.formula1.com/content/dam/fom-website/teams/2026/mercedes.png" style="height: 24px; width: auto; margin-right: 12px;" />'
 
     st.markdown(f"""
     <div class="wcc-wrapper-box">
-        <div class="wcc-contender-card" style="border-left: 5px solid {wcc_accent_color}; text-align: left !important;">
-            <div style="color: #888888; font-size: 0.72em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 2px; text-align: left !important;">WCC CONTENDER</div>
-            <div style="color: #FFFFFF; font-size: 1.25em; font-weight: bold; margin-bottom: 4px; text-align: left !important;">{wcc_leader_team}</div>
+        <div class="wcc-contender-card" style="border-left: 5px solid {wcc_accent_color}; text-align: left !important; display: flex; flex-direction: column; justify-content: center; height: 115px !important; box-sizing: border-box;">
+            <div style="color: #888888; font-size: 0.72em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; text-align: left !important;">WCC CONTENDER</div>
+            <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                {logo_html}
+                <span style="color: #FFFFFF; font-size: 1.25em; font-weight: bold;">{wcc_leader_team}</span>
+            </div>
             <div style="font-size: 0.85em; color: #BBBBBB; font-weight: 500; text-align: left !important;">Current Championship Leader</div>
         </div>
     </div>
