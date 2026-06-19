@@ -419,6 +419,7 @@ with row1_cols[0]:
         height: 115px; /* Box ki absolute background height sync ki */
         display: flex;
         align-items: flex-end;
+        margin-top: -5px;
     }
     /* Purane .wdc-contender-card ko isse replace karo */
 .wdc-contender-card {
