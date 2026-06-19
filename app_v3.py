@@ -459,9 +459,27 @@ st.markdown(
         cursor: pointer;
     }
     .podium-card:hover {
-        transform: translateY(-6px);
-        box-shadow: 0 0 30px var(--glow-color, rgba(255,255,255,0.25));
-        border-color: var(--glow-color, rgba(255,255,255,0.25));
+        transform: translateY(-6px) !important;
+        box-shadow: 0 0 35px 4px var(--glow-color, rgba(255,255,255,0.25)) !important;
+        border-color: var(--glow-color, rgba(255,255,255,0.25)) !important;
+    }
+
+    /* Prevent Streamlit's column/block wrappers from clipping the glow shadow */
+    [data-testid="stVerticalBlock"],
+    [data-testid="stHorizontalBlock"],
+    [data-testid="stColumn"],
+    [data-testid="stMarkdownContainer"],
+    [data-testid="stMarkdown"] {
+        overflow: visible !important;
+    }
+
+    /* Center the spinner text shown while the prediction is processing */
+    div[data-testid="stSpinner"] {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        text-align: center !important;
     }
 
     </style>
