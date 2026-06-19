@@ -220,14 +220,13 @@ st.markdown(
     div[data-testid="stHorizontalBlock"] div[data-testid="stColumn"]:nth-of-type(2) div[data-testid="stButton"] button {
         background: #181820 !important;
         border: 1px solid rgba(255, 255, 255, 0.04) !important;
-        border-left: 4px solid #27F4D2 !important;
         border-radius: 10px !important;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35) !important;
         color: #27F4D2 !important;
         font-weight: 600 !important;
         font-size: 1.05em !important;
-        min-height: 130px !important;
-        max-height: 130px !important;
+        min-height: 115px !important;
+        max-height: 115px !important;
         width: 100% !important;
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
@@ -420,7 +419,6 @@ st.markdown(
         border-radius: 10px;
         padding: 14px 16px;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
-        border-left: 4px solid #B6BABD;
         min-height: 130px;
         max-height: 130px;
         box-sizing: border-box;
@@ -625,7 +623,7 @@ row2_cols = st.columns(3)
 with row2_cols[0]:
     track_info = TRACK_METRICS.get(race_name, {"name": "F1 Grand Prix Track", "weather": "Fetching Live Status..."})
     st.markdown(f"""
-    <div class="paddock-box" style="border-left: 4px solid #64C4FF; align-items: center; text-align: center !important; min-height: 130px; max-height: 130px;">
+    <div class="paddock-box" style="border-left: 4px solid #64C4FF; align-items: center; text-align: center !important; min-height: 130px !important; max-height: 130px !important;">
         <span style='font-size: 1.1em; font-weight: 600; color: #FFF;'>Circuit details</span>
         <span style='color: #888888; font-size: 0.85em; margin-top: 3px;'>&#x1F5FA; {track_info['name']} &bull; {track_info['weather']}</span>
     </div>
