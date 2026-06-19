@@ -291,23 +291,6 @@ st.markdown(
         width: 100%;
     }
 
-    .popover-anchor div[data-testid="stPopover"] {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100% !important;
-        height: 95px !important;
-        z-index: 10;
-        opacity: 0 !important;
-    }
-    .popover-anchor div[data-testid="stPopover"] > button {
-        width: 100% !important;
-        height: 95px !important;
-        border: none !important;
-        background: transparent !important;
-        cursor: pointer !important;
-    }
-
     .pos-badge {
         background: #FF1801;
         color: white;
@@ -371,38 +354,90 @@ st.markdown(
         filter: drop-shadow(0 12px 16px rgba(255, 24, 1, 0.25));
     }
 
-    /* ==================== COLUMN 4 WCC CARD ==================== */
+    /* ==================== COLUMN 4 WCC CARD (matches WDC card) ==================== */
     .wcc-wrapper-box {
-        position: relative !important;
+        position: relative;
         width: 100%;
         height: 115px;
         display: flex;
         align-items: flex-end;
     }
     .wcc-contender-card {
-        background: #181820 !important;
-        border: 1px solid rgba(255, 255, 255, 0.04) !important;
-        border-radius: 10px !important;
-        padding: 12px 16px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
+        background: #181820;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
+        padding: 12px 16px 12px 90px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
         width: 100%;
         height: 115px !important;
         box-sizing: border-box;
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
-        margin-bottom: 12px !important;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .wcc-3d-logo {
+        position: absolute;
+        left: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 70px;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+    .wcc-3d-logo img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(0 8px 12px rgba(0,0,0,0.5));
+        transition: transform 0.3s ease, filter 0.3s ease;
     }
     .wcc-wrapper-box:hover .wcc-contender-card {
-        transform: translateY(-4px) !important;
-        border-color: rgba(255, 24, 1, 0.4) !important;
-        background: #1c1c26 !important;
+        border-color: #FF1801 !important;
         box-shadow: 0 0 20px rgba(255, 24, 1, 0.35) !important;
+        background: #1c1c26 !important;
     }
-    .wcc-wrapper-box:hover img {
+    .wcc-wrapper-box:hover .wcc-3d-logo img {
         transform: scale(1.08);
+        filter: drop-shadow(0 12px 16px rgba(255, 24, 1, 0.25));
+    }
+
+    /* ==================== LAST RACE RESULT (static, no dropdown) ==================== */
+    .race-result-box {
+        background: #181820;
+        border: 1px solid rgba(255, 255, 255, 0.04);
+        border-radius: 10px;
+        padding: 12px 16px;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
+        border-left: 4px solid #B6BABD;
+        min-height: 85px;
+        max-height: 85px;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .race-result-box:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 24, 1, 0.25);
+        background: #1c1c26;
+        box-shadow: 0 0 20px rgba(255, 24, 1, 0.35);
+    }
+    .race-result-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.78em;
+        color: #DDDDDD;
+        line-height: 1.5;
+    }
+    .race-result-row .pos-tag {
+        color: #888888;
+        font-weight: 700;
+        margin-right: 6px;
     }
     </style>
     """,
@@ -526,19 +561,17 @@ with row1_cols[3]:
     if os.path.exists(logo_path):
         with open(logo_path, "rb") as img_file:
             b64_string = base64.b64encode(img_file.read()).decode()
-        logo_html = f'<img src="data:image/png;base64,{b64_string}" style="height: 32px; width: auto; margin-right: 10px; transition: transform 0.3s ease; filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));" />'
+        logo_html = f'<img src="data:image/png;base64,{b64_string}" style="height: 48px; width: auto; transition: transform 0.3s ease;" />'
     else:
-        logo_html = '<img src="https://media.formula1.com/content/dam/fom-website/teams/2026/mercedes.png" style="height: 32px; width: auto; margin-right: 10px; transition: transform 0.3s ease;" />'
+        logo_html = '<img src="https://media.formula1.com/content/dam/fom-website/teams/2026/mercedes.png" style="height: 48px; width: auto; transition: transform 0.3s ease;" />'
 
     st.markdown(f"""
     <div class="wcc-wrapper-box">
-        <div class="wcc-contender-card" style="border-left: 5px solid {wcc_accent_color};">
-            <div style="color: #888888; font-size: 0.72em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px;">WCC CONTENDER</div>
-            <div style="display: inline-flex; align-items: center; justify-content: center; margin-bottom: 4px; width: 100%;">
-                {logo_html}
-                <span style="color: #FFFFFF; font-size: 1.25em; font-weight: bold;">{wcc_leader_team}</span>
-            </div>
-            <div style="font-size: 0.85em; color: #BBBBBB; font-weight: 500;">Current Championship Leader</div>
+        <div class="wcc-3d-logo">{logo_html}</div>
+        <div class="wcc-contender-card">
+            <div style="color: #888888; font-size: 0.72em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; line-height: 1.2;">WCC CONTENDER</div>
+            <div style="color: #FFFFFF; font-size: 1.25em; font-weight: bold; margin: 3px 0; line-height: 1.2;">{wcc_leader_team}</div>
+            <div style="border-left: 3px solid {wcc_accent_color}; padding-left: 8px; font-size: 0.85em; color: #BBBBBB; font-weight: 500; margin-top: 3px; line-height: 1.2;">Current Championship Leader</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -557,21 +590,18 @@ with row2_cols[0]:
 
 with row2_cols[1]:
     st.markdown('<div class="prediction-container paddock-box" style="border-left: 4px solid #27F4D2; align-items: stretch; padding: 12px 14px; min-height: 85px; max-height: 85px;">', unsafe_allow_html=True)
-    trigger_prediction = st.button("\U0001F52E Generate Grid Prediction", use_container_width=True)
+    trigger_prediction = st.button("Generate Grid Prediction", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 with row2_cols[2]:
     st.markdown("""
-    <div class="interactive-wrapper popover-anchor">
-        <div class="paddock-box" style="border-left: 4px solid #B6BABD; align-items: center; text-align: center !important; min-height: 85px; max-height: 85px;">
-            <span style='color: #FFFFFF; font-size: 1.15em; font-weight: 500;'>Last race result</span>
-            <span style='color: #666666; font-size: 0.8em; margin-top: 2px;'>Click to open race summary</span>
-        </div>
+    <div class="race-result-box">
+        <div style="color: #FFFFFF; font-size: 0.95em; font-weight: 600; margin-bottom: 6px;">Last race result</div>
+        <div class="race-result-row"><span><span class="pos-tag">P1</span>Lewis Hamilton</span><span style="color:#888;">Ferrari</span></div>
+        <div class="race-result-row"><span><span class="pos-tag">P2</span>George Russell</span><span style="color:#888;">Mercedes</span></div>
+        <div class="race-result-row"><span><span class="pos-tag">P3</span>Lando Norris</span><span style="color:#888;">McLaren</span></div>
     </div>
     """, unsafe_allow_html=True)
-    with st.popover("Results Window"):
-        st.markdown("<h4 style='color:#FF1801;'>&#x1F3C1; AWS Gran Premio de España Result</h4>", unsafe_allow_html=True)
-        st.markdown("**1st:** Lewis Hamilton (Ferrari)<br>**2nd:** George Russell (Mercedes)<br>**3rd:** Lando Norris (McLaren)", unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
