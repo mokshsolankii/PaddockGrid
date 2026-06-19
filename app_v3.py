@@ -567,7 +567,7 @@ with row2_cols[0]:
     st.markdown(f"""
     <div class="paddock-box" style="border-left: 4px solid #64C4FF; align-items: center; text-align: center !important; min-height: 85px; max-height: 85px;">
         <span style='font-size: 1.1em; font-weight: 600; color: #FFF;'>Circuit details</span>
-        <span style='color: #888888; font-size: 0.85em; margin-top: 3px;'>U+1F5FA {track_info['name']} • {track_info['weather']}</span>
+        <span style='color: #888888; font-size: 0.85em; margin-top: 3px;'>&#x1F5FA; {track_info['name']} • {track_info['weather']}</span>
     </div>
     """, unsafe_allow_html=True)
 
