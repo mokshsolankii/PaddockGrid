@@ -43,7 +43,7 @@ The system is engineered as a decoupled, multi-stage data processing and machine
 # 1. To clone and spin up this elite F1 telemetry instance locally, run the following sequence in your terminal:
 
 ```bash
-git clone https://github.com/mokshsolankii/F1-Race-Outcome-Predictor.git
+git clone https://github.com/mokshsolankii/PaddockGrid.git
 cd F1-Race-Outcome-Predictor
 ```
 # 2. Install pristine package dependencies
